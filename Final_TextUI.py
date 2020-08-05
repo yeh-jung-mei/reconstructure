@@ -37,8 +37,8 @@ def Search_Board():
     res = requests.get(url + "/_api/forums/" + BOARD + "/posts?&limit=100")
     rejs = res.json()
     
-    post_M=0
-    post_F=0
+    post_Male=0 #post_M改為post_Male
+    post_Female=0 #post_F改為post_Female
     
     for m in range(ARTICLE_NUM//100): 
         for i in range(0+(m*100),100+(m*100)):
@@ -49,16 +49,16 @@ def Search_Board():
             like_list.append(rejs[i-(m*100)]['likeCount'])             
 
             if gender_list[i]=='M':
-                post_M+=1
+                post_Male+=1
             if gender_list[i]=='F':
-                post_F+=1
+                post_Female+=1
                        
         LAST_ID = rejs[99]['id']
         res = requests.get(url + "/_api/forums/" + BOARD + "/posts?&limit=100"+"&before=" + str(LAST_ID))
         rejs = res.json()
 
-    post.append(post_M)
-    post.append(post_F)
+    post.append(post_Male)
+    post.append(post_Female)
         
     return  title_list, excerpt_list, id_list, gender_list
 
@@ -101,10 +101,10 @@ def Search_String(title_list, excerpt_list, like_list, id_list):
         
         #尋找提到各星座提到男女的文章數量  
         for i in range(ARTICLE_NUM):
-            flag_m=0
-            flag_f=0
-            flag_men=0
-            flag_fe=0
+            flag_male=0 #flag_m改為flag_male
+            flag_female=0 #flag_f改為flag_female
+            flag_male_excerpt=0 #me改為male_excerpt
+            flag_female_excerpt=0 #me改為female_excerpt
             flag_title_searched_m=0
             flag_title_searched_f=0
             
@@ -113,18 +113,18 @@ def Search_String(title_list, excerpt_list, like_list, id_list):
                 if title_list[i][j]==horo_string[k][0]:
                     if title_list[i][j+1]==horo_string[k][1]:
                         if title_list[i][j+2]=="男":
-                            if flag_m==1:
+                            if flag_male==1:
                                 break
                             else:
                                 sum_of[k][2]+=1
-                                flag_m=1
+                                flag_male=1
                                 flag_title_searched_m=1
                         elif title_list[i][j+2]=="女":
-                            if flag_f==1:
+                            if flag_female==1:
                                 break
                             else:
                                 sum_of[k][3]+=1
-                                flag_f=1
+                                flag_female=1
                                 flag_title_searched_f=1
                                 
             #爬內容
@@ -132,19 +132,19 @@ def Search_String(title_list, excerpt_list, like_list, id_list):
                 if excerpt_list[i][j]==horo_string[k][0]:
                     if excerpt_list[i][j+1]==horo_string[k][1]:
                         if excerpt_list[i][j+2]=="男":
-                            if flag_men==1:
+                            if flag_male_excerpt==1:
                                 break
                             else:
                                 if flag_title_searched_m==0:
                                     sum_of[k][2]+=1
-                                    flag_men=1
+                                    flag_male_excerpt=1
                         elif excerpt_list[i][j+2]=="女":
-                            if flag_fe==1:
+                            if flag_female_excerpt==1:
                                 break
                             else:
                                 if flag_title_searched_f==0:
                                     sum_of[k][3]+=1
-                                    flag_fe=1
+                                    flag_female_excerpt=1
     return max_like                                                  
             
         
@@ -196,12 +196,12 @@ def Most_Like(max_like,horo_string,title_list):
 
 def Plot_Graph(ans):
     
-    a=[]
-    c=[]
-    d=[]
-    e=[]
-    f=[]
-    h=["Male","Female"]
+    title_list=[]#a改為title_list
+    content_list=[]#c改為content_list
+    boy_list=[]#d改為boy_list
+    girl_list=[]#e改為girl_list
+    add_list=[]#f改為add_list
+    gender=["Male","Female"]#h改為gender
     
     for k in range(12):
         title=sum_of[k][0]
@@ -210,11 +210,11 @@ def Plot_Graph(ans):
         boy=sum_of[k][2]
         girl=sum_of[k][3]
         key=custom_sum[k]
-        a.append(title)
-        c.append(content)
-        f.append(add)
-        d.append(boy)
-        e.append(girl)
+        title_list.append(title)
+        content_list.append(content)
+        add_list.append(add)
+        boy_list.append(boy)
+        girl_list.append(girl)
     
         
     if ans==1:
@@ -231,7 +231,7 @@ def Plot_Graph(ans):
         plt.legend()
         plt.subplot(122)
         plt.plot(figsize=(3,3))
-        plt.pie(n,labels=h,autopct='%1.1f%%')
+        plt.pie(n,labels=gender,autopct='%1.1f%%')
 
         plt.show()
 
