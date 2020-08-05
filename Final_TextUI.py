@@ -6,12 +6,14 @@ from matplotlib.font_manager import FontProperties
 import numpy as np
 
 
+##獲取網站
 url = "https://www.dcard.tw"
 BOARD = 'horoscopes'
 ARTICLE_NUM=10000 #輸入100的倍數
 myfont = FontProperties(fname=r'./GenYoGothicTW-Regular.ttf')
 
 
+##定義變數
 kind=4 #w改成kind
 horo_num=12 #h改成horo_num
 sum_of = [[0 for x in range(kind)] for y in range(horo_num)]
@@ -24,7 +26,7 @@ output = []
 search_query=[""]
 post=[] #n改成post
 
-    
+##定義變數    
 horo_string=["牡羊","金牛","雙子","巨蟹","獅子","處女","天秤","天蠍","射手","摩羯","水瓶","雙魚"]
 horo_english=["Aries","Taurus","Gemini","Cancer","Leo","Virgo","Libra","Scorpio","Sagittarius","Capricorn","Aquarius","Pisces"] #b改成horo_english
 title_list=[]
@@ -32,7 +34,9 @@ excerpt_list=[]
 id_list=[]
 gender_list=[]
 like_list=[]                                                       
-    
+
+
+##爬星座版
 def Search_Board():
     res = requests.get(url + "/_api/forums/" + BOARD + "/posts?&limit=100")
     rejs = res.json()
@@ -62,7 +66,8 @@ def Search_Board():
         
     return  title_list, excerpt_list, id_list, gender_list
 
-        
+
+##尋找文章數量        
 def Search_String(title_list, excerpt_list, like_list, id_list):    
 
     for k in range(12):
@@ -147,7 +152,9 @@ def Search_String(title_list, excerpt_list, like_list, id_list):
                                     flag_female_excerpt=1
     return max_like                                                  
             
-        
+
+
+##搜尋關鍵字
 def Search_Custom(title_list,excerpt_list):
     for k in range(12):
         custom_sum[k]=0
@@ -178,6 +185,8 @@ def Search_Custom(title_list,excerpt_list):
     return custom_sum
         
 
+
+##最多讚數
 def Most_Like(max_like,horo_string,title_list):                
     for k in range(12):
         res = requests.get(url + "/f/horoscopes/p/" + str(max_like[k][1]))
@@ -194,6 +203,8 @@ def Most_Like(max_like,horo_string,title_list):
     return output
         
 
+
+##畫圖表
 def Plot_Graph(ans):
     
     title_list=[]#a改為title_list
@@ -216,7 +227,8 @@ def Plot_Graph(ans):
         boy_list.append(boy)
         girl_list.append(girl)
     
-        
+
+    ##星座男女討論度比較/男女發文數比例    
     if ans==1:
         plt.title("Horoscope Investigation",fontsize=20)
         plt.subplot(121)
@@ -236,7 +248,7 @@ def Plot_Graph(ans):
         plt.show()
 
     
-    
+    ##各星座討論度比較
     if ans==2:
         plt.figure(figsize=(15,5))
         plt.xticks(fontsize=10)
@@ -250,7 +262,7 @@ def Plot_Graph(ans):
 
         
 
-
+##初始畫面
 if __name__ == '__main__':
 
     Search_Board()
@@ -267,6 +279,8 @@ if __name__ == '__main__':
     mode=""
     while mode!=0:
         mode=eval(input("請輸入模式（1：查詢最多按讚文，2：畫圖表，3：查詢關鍵字,0：結束)\t："))
+
+        ##查詢最多按讚文
         if mode==1:
             output_n=""                 
             while output_n!=0:
@@ -277,6 +291,8 @@ if __name__ == '__main__':
                         print("")
                         print(output[output_n-1])
                         print("")
+
+        ##畫圖表
         if mode==2:
             ans=""
             while ans!=0:
@@ -286,6 +302,7 @@ if __name__ == '__main__':
                 elif ans>0 and ans<3:
                     Plot_Graph(ans)
 
+        ##查詢關鍵字
         if mode==3:
             search_query=""
             while search_query!="0":
