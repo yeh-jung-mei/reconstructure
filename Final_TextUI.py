@@ -226,8 +226,8 @@ def Plot_Graph(ans):
         plt.rcParams["font.family"]="DejaVu Sans"
         plt.xlabel('Horoscope',fontsize=15)
         plt.ylabel('Number',fontsize=15)
-        p1=plt.bar(horo_english,d,label = 'Male',align = "edge", width = 0.35)
-        p2=plt.bar(horo_english,e,label = 'Female',align = "edge", width = -0.35)
+        p1=plt.bar(horo_english,boy_list,label = 'Male',align = "edge", width = 0.35)
+        p2=plt.bar(horo_english,girl_list,label = 'Female',align = "edge", width = -0.35)
         plt.legend()
         plt.subplot(122)
         plt.plot(figsize=(3,3))
@@ -244,7 +244,7 @@ def Plot_Graph(ans):
         plt.rcParams["font.family"]="DejaVu Sans"    
         plt.xlabel('Horoscope',fontsize=20)
         plt.ylabel('Number',fontsize=20)
-        plt.bar(horo_english,f)
+        plt.bar(horo_english,add_list)
         plt.title("Horoscope Investigation",fontsize=25)
         plt.show()
 
