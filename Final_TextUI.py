@@ -4,6 +4,7 @@ import requests
 from matplotlib import pyplot as plt
 from matplotlib.font_manager import FontProperties
 import numpy as np
+from dcard import Dcard #DcardSpider套件，可以直接爬Dcard文章取得後設資訊
 
 
 ##獲取網站
@@ -36,35 +37,35 @@ gender_list=[]
 like_list=[]                                                       
 
 
-##爬星座版
+##將原本的Search_Board()函式分成兩個，新的Search_Board()函式專門存取Dcard網站上的資訊，Count_gender(gender_list)函式專門計算男女發文的次數
+##爬星座版，存取其中的title,excerpt,id,gender,likeCount，並 return title_list,excerpt_list,id_list,gender_list
 def Search_Board():
-    res = requests.get(url + "/_api/forums/" + BOARD + "/posts?&limit=100")
-    rejs = res.json()
-    
-    post_Male=0 #post_M改為post_Male
-    post_Female=0 #post_F改為post_Female
-    
-    for m in range(ARTICLE_NUM//100): 
-        for i in range(0+(m*100),100+(m*100)):
-            title_list.append(rejs[i-(m*100)]['title'])
-            excerpt_list.append(rejs[i-(m*100)]['excerpt'])
-            id_list.append(rejs[i-(m*100)]['id'])
-            gender_list.append(rejs[i-(m*100)]['gender'])
-            like_list.append(rejs[i-(m*100)]['likeCount'])             
+  dcard = Dcard()
+  forum = dcard.forums('horoscopes')
 
-            if gender_list[i]=='M':
-                post_Male+=1
-            if gender_list[i]=='F':
-                post_Female+=1
-                       
-        LAST_ID = rejs[99]['id']
-        res = requests.get(url + "/_api/forums/" + BOARD + "/posts?&limit=100"+"&before=" + str(LAST_ID))
-        rejs = res.json()
+  for forum in forum.get_metas(num=10000):
+    title_list.append(forum['title'])
+    excerpt_list.append(forum['excerpt'])
+    id_list.append(forum['id'])
+    gender_list.append(forum['gender'])
+    like_list.append(forum['likeCount'])
 
-    post.append(post_Male)
-    post.append(post_Female)
-        
-    return  title_list, excerpt_list, id_list, gender_list
+  return  title_list, excerpt_list, id_list, gender_list
+
+##計算男女發文的次數
+def Count_gender(gender_list):
+
+  post_Male=0 #post_M改為post_Male
+  post_Female=0 #post_F改為post_Female
+
+  for i in range(ARTICLE_NUM):
+    if gender_list[i]=='M':
+      post_Male+=1
+    if gender_list[i]=='F':
+      post_Female+=1
+
+  post.append(post_Male)
+  post.append(post_Female)
 
 
 ##尋找文章數量        
@@ -266,6 +267,7 @@ def Plot_Graph(ans):
 if __name__ == '__main__':
 
     Search_Board()
+    Count_gender(gender_list)
     Search_String(title_list, excerpt_list, like_list, id_list)             
     
     
