@@ -190,7 +190,7 @@ def Most_Like(max_like,horo_string,title_list):
                     content_horo.append(content)
                     break
 
-        output.append(str(horo_string[k])+" 贊數："+str(max_like[k][0])+" \t"+str(max_like[k][2])+"\n"+str(content_horo[k])+"\n")
+        output.append(str(horo_string[k])+" 讚數："+str(max_like[k][0])+" \t"+str(max_like[k][2])+"\n"+str(content_horo[k])+"\n")
     return output
         
 
@@ -231,7 +231,7 @@ def Plot_Graph(ans):
         plt.legend()
         plt.subplot(122)
         plt.plot(figsize=(3,3))
-        plt.pie(n,labels=gender,autopct='%1.1f%%')
+        plt.pie(post,labels=gender,autopct='%1.1f%%')
 
         plt.show()
 
@@ -258,7 +258,7 @@ if __name__ == '__main__':
     
     
     for k in range(12):                
-        print(horo_string[k],"\t符合文章： ",sum_of[k][0]+sum_of[k][1],"\t男： ",sum_of[k][2],"\t女： ",sum_of[k][3],"\t最多按贊文: 贊:\t",max_like[k][0],"\t",max_like[k][2],sep="")  
+        print(horo_string[k],"\t符合文章： ",sum_of[k][0]+sum_of[k][1],"\t男： ",sum_of[k][2],"\t女： ",sum_of[k][3],"\t最多按讚文: 讚:\t",max_like[k][0],"\t",max_like[k][2],sep="")  
 
     print("")
     
@@ -266,7 +266,7 @@ if __name__ == '__main__':
 
     mode=""
     while mode!=0:
-        mode=eval(input("請輸入模式（1：查詢最多按贊文，2：畫圖表，3：查詢關鍵字,0：結束)\t："))
+        mode=eval(input("請輸入模式（1：查詢最多按讚文，2：畫圖表，3：查詢關鍵字,0：結束)\t："))
         if mode==1:
             output_n=""                 
             while output_n!=0:
