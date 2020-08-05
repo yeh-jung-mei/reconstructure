@@ -12,21 +12,21 @@ ARTICLE_NUM=10000 #輸入100的倍數
 myfont = FontProperties(fname=r'./GenYoGothicTW-Regular.ttf')
 
 
-w=4
-h=12
-sum_of = [[0 for x in range(w)] for y in range(h)]
-horo = [[0 for x in range(w)] for y in range(h)]
-custom_sum = [ 0 for x in range(h)]
-horo_list = [[] for y in range(h)]
-max_like = [[0 for x in range(w)] for x in range(h)]                    
+kind=4 #w改成kind
+horo_num=12 #h改成horo_num
+sum_of = [[0 for x in range(kind)] for y in range(horo_num)]
+horo_string = [[0 for x in range(kind)] for y in range(horo_num)] #horo改成horo_string
+custom_sum = [ 0 for x in range(horo_num)]
+horo_list = [[] for y in range(horo_num)]
+max_like = [[0 for x in range(kind)] for x in range(horo_num)]                    
 content_horo = []                                                      
 output = []                                                          
 search_query=[""]
-n=[]
+post=[] #n改成post
 
     
-horo=["牡羊","金牛","雙子","巨蟹","獅子","處女","天秤","天蠍","射手","摩羯","水瓶","雙魚"]
-b=["Aries","Taurus","Gemini","Cancer","Leo","Virgo","Libra","Scorpio","Sagittarius","Capricorn","Aquarius","Pisces"]
+horo_string=["牡羊","金牛","雙子","巨蟹","獅子","處女","天秤","天蠍","射手","摩羯","水瓶","雙魚"]
+horo_english=["Aries","Taurus","Gemini","Cancer","Leo","Virgo","Libra","Scorpio","Sagittarius","Capricorn","Aquarius","Pisces"] #b改成horo_english
 title_list=[]
 excerpt_list=[]
 id_list=[]
@@ -57,8 +57,8 @@ def Search_Board():
         res = requests.get(url + "/_api/forums/" + BOARD + "/posts?&limit=100"+"&before=" + str(LAST_ID))
         rejs = res.json()
 
-    n.append(post_M)
-    n.append(post_F)
+    post.append(post_M)
+    post.append(post_F)
         
     return  title_list, excerpt_list, id_list, gender_list
 
@@ -72,8 +72,8 @@ def Search_String(title_list, excerpt_list, like_list, id_list):
             #爬標題
             flag_title_searched=0
             for j in range(len(title_list[i])-1):
-                if title_list[i][j]==horo[k][0]:
-                    if title_list[i][j+1]==horo[k][1]:
+                if title_list[i][j]==horo_string[k][0]:
+                    if title_list[i][j+1]==horo_string[k][1]:
                         if flag_title_searched==0:                     
                             sum_of[k][0]+=1
                             horo_list[k].append(id_list[i])            
@@ -85,8 +85,8 @@ def Search_String(title_list, excerpt_list, like_list, id_list):
                             break
             #爬內容
             for j in range(len(excerpt_list[i])-1):
-                if excerpt_list[i][j]==horo[k][0]:
-                    if excerpt_list[i][j+1]==horo[k][1]:
+                if excerpt_list[i][j]==horo_string[k][0]:
+                    if excerpt_list[i][j+1]==horo_string[k][1]:
                         if flag_title_searched==0:                        
                             sum_of[k][1]+=1
                             horo_list[k].append(id_list[i])                  
@@ -103,15 +103,15 @@ def Search_String(title_list, excerpt_list, like_list, id_list):
         for i in range(ARTICLE_NUM):
             flag_m=0
             flag_f=0
-            flag_me=0
+            flag_men=0
             flag_fe=0
             flag_title_searched_m=0
             flag_title_searched_f=0
             
             #爬標題
             for j in range(len(title_list[i])-2):
-                if title_list[i][j]==horo[k][0]:
-                    if title_list[i][j+1]==horo[k][1]:
+                if title_list[i][j]==horo_string[k][0]:
+                    if title_list[i][j+1]==horo_string[k][1]:
                         if title_list[i][j+2]=="男":
                             if flag_m==1:
                                 break
@@ -129,15 +129,15 @@ def Search_String(title_list, excerpt_list, like_list, id_list):
                                 
             #爬內容
             for j in range(len(excerpt_list[i])-2):
-                if excerpt_list[i][j]==horo[k][0]:
-                    if excerpt_list[i][j+1]==horo[k][1]:
+                if excerpt_list[i][j]==horo_string[k][0]:
+                    if excerpt_list[i][j+1]==horo_string[k][1]:
                         if excerpt_list[i][j+2]=="男":
-                            if flag_me==1:
+                            if flag_men==1:
                                 break
                             else:
                                 if flag_title_searched_m==0:
                                     sum_of[k][2]+=1
-                                    flag_me=1
+                                    flag_men=1
                         elif excerpt_list[i][j+2]=="女":
                             if flag_fe==1:
                                 break
@@ -178,7 +178,7 @@ def Search_Custom(title_list,excerpt_list):
     return custom_sum
         
 
-def Most_Like(max_like,horo,title_list):                
+def Most_Like(max_like,horo_string,title_list):                
     for k in range(12):
         res = requests.get(url + "/f/horoscopes/p/" + str(max_like[k][1]))
         soup = BeautifulSoup(res.text, 'html.parser')
@@ -190,7 +190,7 @@ def Most_Like(max_like,horo,title_list):
                     content_horo.append(content)
                     break
 
-        output.append(str(horo[k])+" 贊數："+str(max_like[k][0])+" \t"+str(max_like[k][2])+"\n"+str(content_horo[k])+"\n")
+        output.append(str(horo_string[k])+" 贊數："+str(max_like[k][0])+" \t"+str(max_like[k][2])+"\n"+str(content_horo[k])+"\n")
     return output
         
 
@@ -226,8 +226,8 @@ def Plot_Graph(ans):
         plt.rcParams["font.family"]="DejaVu Sans"
         plt.xlabel('Horoscope',fontsize=15)
         plt.ylabel('Number',fontsize=15)
-        p1=plt.bar(b,d,label = 'Male',align = "edge", width = 0.35)
-        p2=plt.bar(b,e,label = 'Female',align = "edge", width = -0.35)
+        p1=plt.bar(horo_english,d,label = 'Male',align = "edge", width = 0.35)
+        p2=plt.bar(horo_english,e,label = 'Female',align = "edge", width = -0.35)
         plt.legend()
         plt.subplot(122)
         plt.plot(figsize=(3,3))
@@ -244,7 +244,7 @@ def Plot_Graph(ans):
         plt.rcParams["font.family"]="DejaVu Sans"    
         plt.xlabel('Horoscope',fontsize=20)
         plt.ylabel('Number',fontsize=20)
-        plt.bar(b,f)
+        plt.bar(horo_english,f)
         plt.title("Horoscope Investigation",fontsize=25)
         plt.show()
 
@@ -258,11 +258,11 @@ if __name__ == '__main__':
     
     
     for k in range(12):                
-        print(horo[k],"\t符合文章： ",sum_of[k][0]+sum_of[k][1],"\t男： ",sum_of[k][2],"\t女： ",sum_of[k][3],"\t最多按贊文: 贊:\t",max_like[k][0],"\t",max_like[k][2],sep="")  
+        print(horo_string[k],"\t符合文章： ",sum_of[k][0]+sum_of[k][1],"\t男： ",sum_of[k][2],"\t女： ",sum_of[k][3],"\t最多按贊文: 贊:\t",max_like[k][0],"\t",max_like[k][2],sep="")  
 
     print("")
     
-    Most_Like(max_like,horo,title_list)                
+    Most_Like(max_like,horo_string,title_list)                
 
     mode=""
     while mode!=0:
@@ -298,7 +298,7 @@ if __name__ == '__main__':
                 else:
                     Search_Custom(title_list,excerpt_list)
                     for k in range(12):
-                        print(horo[k],"\t",custom_sum[k])
+                        print(horo_string[k],"\t",custom_sum[k])
                 
         #key關鍵字熱度比較(柱狀圖) 
                     plt.figure(figsize=(15,5))
@@ -307,7 +307,7 @@ if __name__ == '__main__':
                     plt.rcParams["font.family"]="DejaVu Sans"
                     plt.xlabel('Horoscope',fontsize=20)
                     plt.ylabel('Number',fontsize=20)
-                    plt.bar(b,custom_sum)
+                    plt.bar(horo_english,custom_sum)
                     plt.title("Horoscope Investigation",fontsize=25)
                     plt.show()
 
