@@ -4,7 +4,7 @@ import requests
 from matplotlib import pyplot as plt
 from matplotlib.font_manager import FontProperties
 import numpy as np
-from dcard import Dcard #DcardSpider套件，可以直接爬Dcard文章取得後設資訊
+from dcard import Dcard  #DcardSpider套件，可以直接爬Dcard文章取得後設資訊
 
 
 ##獲取網站
@@ -15,20 +15,25 @@ myfont = FontProperties(fname=r'./GenYoGothicTW-Regular.ttf')
 
 
 ##定義變數
-kind=4 #w改成kind
+kind=4      #w改成kind
 horo_num=12 #h改成horo_num
 sum_of = [[0 for x in range(kind)] for y in range(horo_num)]
 horo_string = [[0 for x in range(kind)] for y in range(horo_num)] #horo改成horo_string
+horo_string_boy = [[0 for x in range(kind)] for y in range(horo_num)] 
+horo_string_girl = [[0 for x in range(kind)] for y in range(horo_num)] 
 custom_sum = [ 0 for x in range(horo_num)]
 horo_list = [[] for y in range(horo_num)]
 max_like = [[0 for x in range(kind)] for x in range(horo_num)]                    
 content_horo = []                                                      
 output = []                                                          
 search_query=[""]
-post=[] #n改成post
+post=[]    #n改成post
+
 
 ##定義變數    
 horo_string=["牡羊","金牛","雙子","巨蟹","獅子","處女","天秤","天蠍","射手","摩羯","水瓶","雙魚"]
+horo_string_boy=["牡羊男","金牛男","雙子男","巨蟹男","獅子男","處女男","天秤男","天蠍男","射手男","摩羯男","水瓶男","雙魚男"]
+horo_string_girl=["牡羊女","金牛女","雙子女","巨蟹女","獅子女","處女女","天秤女","天蠍女","射手女","摩羯女","水瓶女","雙魚女"]
 horo_english=["Aries","Taurus","Gemini","Cancer","Leo","Virgo","Libra","Scorpio","Sagittarius","Capricorn","Aquarius","Pisces"] #b改成horo_english
 title_list=[]
 excerpt_list=[]
@@ -52,10 +57,11 @@ def Search_Board():
 
   return  title_list, excerpt_list, id_list, gender_list
 
+
 ##計算男女發文的次數
 def Count_gender(gender_list):
 
-  post_Male=0 #post_M改為post_Male
+  post_Male=0   #post_M改為post_Male
   post_Female=0 #post_F改為post_Female
 
   for i in range(ARTICLE_NUM):
@@ -68,91 +74,81 @@ def Count_gender(gender_list):
   post.append(post_Female)
 
 
-##尋找文章數量        
-def Search_String(title_list, excerpt_list, like_list, id_list):    
-
+##尋找文章數量
+##用in運算子取代原本搜尋字串的for迴圈        
+def Search_String(title_list, excerpt_list, like_list, id_list):  
     for k in range(12):
         #尋找提到各星座的文章數量
-        max_like_e=0                                                 
+        max_like_e=0
         for i in range(ARTICLE_NUM):
             #爬標題
             flag_title_searched=0
-            for j in range(len(title_list[i])-1):
-                if title_list[i][j]==horo_string[k][0]:
-                    if title_list[i][j+1]==horo_string[k][1]:
-                        if flag_title_searched==0:                     
-                            sum_of[k][0]+=1
-                            horo_list[k].append(id_list[i])            
-                            flag_title_searched=1
-                            if like_list[i]>max_like_e:                 
-                                max_like_e=like_list[i]             
-                                max_like_id_e=id_list[i]           
-                                max_like_title_e=title_list[i]              
-                            break
-            #爬內容
-            for j in range(len(excerpt_list[i])-1):
-                if excerpt_list[i][j]==horo_string[k][0]:
-                    if excerpt_list[i][j+1]==horo_string[k][1]:
-                        if flag_title_searched==0:                        
-                            sum_of[k][1]+=1
-                            horo_list[k].append(id_list[i])                  
-                            if like_list[i]>max_like_e:                
-                                max_like_e=like_list[i]                 
-                                max_like_id_e=id_list[i]             
-                                max_like_title_e=title_list[i]                
-                            break
+            if horo_string[k] in title_list[i]:
+              if flag_title_searched==0:
+                sum_of[k][0]+=1
+                horo_list[k].append(id_list[i])
+                flag_title_searched=1
+                if like_list[i]>max_like_e:                 
+                  max_like_e=like_list[i]             
+                  max_like_id_e=id_list[i]           
+                  max_like_title_e=title_list[i]
+            #爬內容  
+            if  horo_string[k] in excerpt_list[i]:
+              if flag_title_searched==0:
+                sum_of[k][1]+=1
+                horo_list[k].append(id_list[i])
+                if like_list[i]>max_like_e:                
+                  max_like_e=like_list[i]                 
+                  max_like_id_e=id_list[i]             
+                  max_like_title_e=title_list[i]
+
         max_like[k][0]=max_like_e                 
         max_like[k][1]=max_like_id_e                
-        max_like[k][2]=max_like_title_e                 
-        
-        #尋找提到各星座提到男女的文章數量  
+        max_like[k][2]=max_like_title_e
+       
+
+def Gender_Article(title_list, excerpt_list):
+
+    for k in range(12):
+        #尋找提到各星座提到男女的文章數量
         for i in range(ARTICLE_NUM):
-            flag_male=0 #flag_m改為flag_male
-            flag_female=0 #flag_f改為flag_female
-            flag_male_excerpt=0 #me改為male_excerpt
+            flag_male=0           #flag_m改為flag_male
+            flag_female=0         #flag_f改為flag_female
+            flag_male_excerpt=0   #me改為male_excerpt
             flag_female_excerpt=0 #me改為female_excerpt
             flag_title_searched_m=0
             flag_title_searched_f=0
-            
             #爬標題
-            for j in range(len(title_list[i])-2):
-                if title_list[i][j]==horo_string[k][0]:
-                    if title_list[i][j+1]==horo_string[k][1]:
-                        if title_list[i][j+2]=="男":
-                            if flag_male==1:
-                                break
-                            else:
-                                sum_of[k][2]+=1
-                                flag_male=1
-                                flag_title_searched_m=1
-                        elif title_list[i][j+2]=="女":
-                            if flag_female==1:
-                                break
-                            else:
-                                sum_of[k][3]+=1
-                                flag_female=1
-                                flag_title_searched_f=1
-                                
+            if horo_string_boy[k] in title_list[i]:
+                if flag_male==1:
+                    break
+                else:
+                  sum_of[k][2]+=1
+                  flag_male=1
+                  flag_title_searched_m=1
+            elif horo_string_girl[k] in title_list[i]:
+                if flag_female==1:
+                    break
+                else:
+                  sum_of[k][3]+=1
+                  flag_female=1
+                  flag_title_searched_f=1
             #爬內容
-            for j in range(len(excerpt_list[i])-2):
-                if excerpt_list[i][j]==horo_string[k][0]:
-                    if excerpt_list[i][j+1]==horo_string[k][1]:
-                        if excerpt_list[i][j+2]=="男":
-                            if flag_male_excerpt==1:
-                                break
-                            else:
-                                if flag_title_searched_m==0:
-                                    sum_of[k][2]+=1
-                                    flag_male_excerpt=1
-                        elif excerpt_list[i][j+2]=="女":
-                            if flag_female_excerpt==1:
-                                break
-                            else:
-                                if flag_title_searched_f==0:
-                                    sum_of[k][3]+=1
-                                    flag_female_excerpt=1
-    return max_like                                                  
-            
+            if horo_string_boy[k] in excerpt_list[i]:
+                if flag_male_excerpt==1:
+                    break
+                else:
+                  if flag_title_searched_m==0:
+                    sum_of[k][2]+=1
+                    flag_male_excerpt=1
+
+            elif horo_string_girl[k] in excerpt_list[i]:
+                if flag_female_excerpt==1:
+                    break
+                else:
+                  if flag_title_searched_f==0:
+                    sum_of[k][3]+=1
+                    flag_female_excerpt=1
 
 
 ##搜尋關鍵字
@@ -208,11 +204,11 @@ def Most_Like(max_like,horo_string,title_list):
 ##畫圖表
 def Plot_Graph(ans):
     
-    title_list=[]#a改為title_list
-    content_list=[]#c改為content_list
-    boy_list=[]#d改為boy_list
-    girl_list=[]#e改為girl_list
-    add_list=[]#f改為add_list
+    title_count_list=[]     #a改為title_count_list
+    content_list=[]         #c改為content_list
+    boy_list=[]             #d改為boy_list
+    girl_list=[]            #e改為girl_list
+    add_list=[]             #f改為add_list
     gender=["Male","Female"]#h改為gender
     
     for k in range(12):
@@ -222,7 +218,7 @@ def Plot_Graph(ans):
         boy=sum_of[k][2]
         girl=sum_of[k][3]
         key=custom_sum[k]
-        title_list.append(title)
+        title_count_list.append(title)
         content_list.append(content)
         add_list.append(add)
         boy_list.append(boy)
@@ -250,14 +246,17 @@ def Plot_Graph(ans):
 
     
     ##各星座討論度比較
-    if ans==2:
+    if ans==2 or ans==3:
         plt.figure(figsize=(15,5))
         plt.xticks(fontsize=10)
         plt.yticks(fontsize=10)
         plt.rcParams["font.family"]="DejaVu Sans"    
         plt.xlabel('Horoscope',fontsize=20)
         plt.ylabel('Number',fontsize=20)
-        plt.bar(horo_english,add_list)
+        if ans==2: 
+          plt.bar(horo_english,add_list)
+        elif ans==3:
+          plt.bar(horo_english,custom_sum)
         plt.title("Horoscope Investigation",fontsize=25)
         plt.show()
 
@@ -268,8 +267,8 @@ if __name__ == '__main__':
 
     Search_Board()
     Count_gender(gender_list)
-    Search_String(title_list, excerpt_list, like_list, id_list)             
-    
+    Search_String(title_list, excerpt_list, like_list, id_list) 
+    Gender_Article(title_list, excerpt_list)            
     
     for k in range(12):                
         print(horo_string[k],"\t符合文章： ",sum_of[k][0]+sum_of[k][1],"\t男： ",sum_of[k][2],"\t女： ",sum_of[k][3],"\t最多按讚文: 讚:\t",max_like[k][0],"\t",max_like[k][2],sep="")  
@@ -318,17 +317,5 @@ if __name__ == '__main__':
                     Search_Custom(title_list,excerpt_list)
                     for k in range(12):
                         print(horo_string[k],"\t",custom_sum[k])
-                
-        #key關鍵字熱度比較(柱狀圖) 
-                    plt.figure(figsize=(15,5))
-                    plt.xticks(fontsize=10)
-                    plt.yticks(fontsize=10)
-                    plt.rcParams["font.family"]="DejaVu Sans"
-                    plt.xlabel('Horoscope',fontsize=20)
-                    plt.ylabel('Number',fontsize=20)
-                    plt.bar(horo_english,custom_sum)
-                    plt.title("Horoscope Investigation",fontsize=25)
-                    plt.show()
-
-
-        
+                    ans=3
+                    Plot_Graph(ans)
